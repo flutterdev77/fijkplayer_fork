@@ -540,35 +540,20 @@ class __InnerFijkViewState extends State<_InnerFijkView> {
       final Rect pos = Rect.fromLTWH(
           offset.dx, offset.dy, childSize.width, childSize.height);
 
-      List ws = <Widget>[
-        Container(
-          width: constraints.maxWidth,
-          height: constraints.maxHeight,
-          color: _color,
-        ),
-        Positioned.fromRect(
-            rect: pos,
-            child: Container(
-              color: Color(0xFF000000),
-              child: buildTexture(),
-            )),
-      ];
-
-      if (widget.cover != null && !value.videoRenderStart) {
-        ws.add(Positioned.fromRect(
-          rect: pos,
-          child: Image(
-            image: widget.cover!,
-            fit: BoxFit.fill,
-          ),
-        ));
-      }
-
-      if (_panelBuilder != null) {
-        ws.add(_panelBuilder!(_player, data, ctx, constraints.biggest, pos));
-      }
       return Stack(
-        children: ws as List<Widget>,
+        children: [
+          Container(
+            width: constraints.maxWidth,
+            height: constraints.maxHeight,
+            color: _color,
+          ),
+          Positioned.fromRect(
+              rect: pos,
+              child: Container(
+                color: Color(0xFF000000),
+                child: buildTexture(),
+              )),
+        ],
       );
     });
   }
