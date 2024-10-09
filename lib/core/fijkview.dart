@@ -370,33 +370,24 @@ class __InnerFijkViewState extends State<_InnerFijkView> {
   bool _vFullScreen = false;
   int _degree = 0;
   bool _videoRender = false;
-  bool _isBufferingComplete = false;
 
   @override
   void initState() {
     super.initState();
     _player = fView.player;
-    _setupPlayerListeners();
+    _fijkValueListener();
+    fView.player.addListener(_fijkValueListener);
     if (widget.fullScreen) {
       widget.fijkViewState.paramNotifier.addListener(_voidValueListener);
     }
   }
 
-  void _setupPlayerListeners() {
-    _player.addListener(_fijkValueListener);
-    _player.onBufferStateUpdate.listen(( value) {
-      if (value) {
-        setState(() {
-          _isBufferingComplete = true;
-        });
-      }
-    });
-  }
-
   FijkView get fView => widget.fijkViewState.widget;
 
   void _voidValueListener() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => _fijkValueListener());
+    var binding = WidgetsBinding.instance;
+    if (binding != null)
+      binding.addPostFrameCallback((_) => _fijkValueListener());
   }
 
   void _fijkValueListener() {
@@ -543,6 +534,7 @@ class __InnerFijkViewState extends State<_InnerFijkView> {
     _videoRender = value.videoRenderStart;
 
     return LayoutBuilder(builder: (ctx, constraints) {
+      // get child size
       final Size childSize = getTxSize(constraints, _fit);
       final Offset offset = getTxOffset(constraints, childSize, _fit);
       final Rect pos = Rect.fromLTWH(
@@ -556,15 +548,13 @@ class __InnerFijkViewState extends State<_InnerFijkView> {
             color: _color,
           ),
           Positioned.fromRect(
-            rect: pos,
-            child: Container(
-              color: Color(0xFF000000),
-              child: _isBufferingComplete ? buildTexture() : Center(child: CircularProgressIndicator()),
-            ),
-          ),
+              rect: pos,
+              child: Container(
+                color: Color(0xFF000000),
+                child: buildTexture(),
+              )),
         ],
       );
     });
   }
-
 }
